@@ -1,4 +1,4 @@
-import { Contract, ethers } from "ethers";
+import { Contract, ethers, formatEther } from "ethers";
 import { useEffect, useState } from "react";
 import abi from "./abi.json";
 
@@ -28,6 +28,9 @@ const App = () => {
       const response = await contract.totalSupply();
 
       console.log(response);
+
+      const parsedResponse = formatEther(response);
+      console.log(parsedResponse);
     } catch (error) {
       console.error(error);
     }
