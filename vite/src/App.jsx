@@ -6,6 +6,7 @@ const App = () => {
   const [signer, setSigner] = useState();
   const [contract, setContract] = useState();
   const [totalSupply, setTotalSupply] = useState(); // totalSupply 상태 변수 추가
+  const [tokenName, setTokenName] = useState(); // tokenName 상태 변수 추가
 
   const onClickMetamask = async () => {
     try {
@@ -23,8 +24,10 @@ const App = () => {
     setSigner(null);
     setContract(null);
     setTotalSupply(null);
+    setTokenName(null);
   };
 
+  //총 발행량 가져오기
   const onClickTotalSupply = async () => {
     try {
       const response = await contract.totalSupply();
@@ -35,6 +38,19 @@ const App = () => {
       console.log(parsedResponse);
 
       setTotalSupply(response); // totalSupply 값 설정
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  //이름 가져오기
+  const onClicktokenName = async () => {
+    try {
+      const response = await contract.name();
+
+      console.log(response);
+
+      setTokenName(response); // tokenName 값 설정
     } catch (error) {
       console.error(error);
     }
@@ -73,15 +89,28 @@ const App = () => {
       {contract && (
         <div className="mt-16 flex flex-col gap-8 bg-blue-100 grow max-w-md w-full">
           <h1 className="box-style">스마트 컨트랙트 연결을 완료했습니다.</h1>
-          <div className="flex">
-            <div className="box-style grow">
-              {totalSupply
-                ? `총 발행량: ${formatEther(totalSupply)}ETH`
-                : "총 발행량 확인"}
+          <div className="flex gap-8">
+            <div className="flex w-full">
+              <div className="box-style grow">
+                {tokenName ? `토큰 이름: ${tokenName}` : "토큰 이름 확인"}
+              </div>
+              <button className="button-style ml-4" onClick={onClicktokenName}>
+                확인
+              </button>
             </div>
-            <button className="button-style ml-4" onClick={onClickTotalSupply}>
-              확인
-            </button>
+            <div className="flex w-full">
+              <div className="box-style grow">
+                {totalSupply
+                  ? `총 발행량: ${formatEther(totalSupply)}ETH`
+                  : "총 발행량 확인"}
+              </div>
+              <button
+                className="button-style ml-4"
+                onClick={onClickTotalSupply}
+              >
+                확인
+              </button>
+            </div>
           </div>
         </div>
       )}
