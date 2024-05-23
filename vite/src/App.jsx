@@ -1,8 +1,10 @@
-import { ethers } from "ethers";
-import { useState } from "react";
+import { Contract, ethers } from "ethers";
+import { useEffect, useState } from "react";
+import abi from "./abi.json";
 
 const App = () => {
   const [signer, setSigner] = useState();
+  const [contract, setContract] = useState();
 
   const onClickMetamask = async () => {
     try {
@@ -20,8 +22,18 @@ const App = () => {
     setSigner(null);
   };
 
+  useEffect(() => {
+    if (!signer) return;
+
+    setContract(
+      new Contract("0xa20dED068e956290c459ad3162d78B93a7109be3", abi, signer)
+    );
+  }, [signer]);
+
+  useEffect(() => console.log(contract), [contract]);
+
   return (
-    <div className="bg-red-100 min-h-screen flex justify-center items-center">
+    <div className="bg-red-100 min-h-screen flex flex-col justify-start justify-center items-center  py-16">
       {signer ? (
         <div className="flex gap-8">
           <div className="box-style">
@@ -39,6 +51,11 @@ const App = () => {
         <button className="button-style" onClick={onClickMetamask}>
           🦊 메타마스크 로그인
         </button>
+      )}
+      {contract && (
+        <div className="mt-16">
+          <h1 className="box-style">스마트 컨트랙트 연결을 완료했습니다.</h1>
+        </div>
       )}
     </div>
   );
