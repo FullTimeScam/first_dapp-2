@@ -20,6 +20,17 @@ const App = () => {
 
   const onClickLogOut = () => {
     setSigner(null);
+    setContract(null);
+  };
+
+  const onClickTotalSupply = async () => {
+    try {
+      const response = await contract.totalSupply();
+
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -33,7 +44,7 @@ const App = () => {
   useEffect(() => console.log(contract), [contract]);
 
   return (
-    <div className="bg-red-100 min-h-screen flex flex-col justify-start justify-center items-center  py-16">
+    <div className="bg-red-100 min-h-screen flex flex-col justify-start items-center py-16">
       {signer ? (
         <div className="flex gap-8">
           <div className="box-style">
@@ -53,8 +64,14 @@ const App = () => {
         </button>
       )}
       {contract && (
-        <div className="mt-16">
+        <div className="mt-16 flex flex-col gap-8">
           <h1 className="box-style">스마트 컨트랙트 연결을 완료했습니다.</h1>
+          <div className="flex">
+            <div className="box-style">총 발행량 확인</div>
+            <button className="button-style" onClick={onClickTotalSupply}>
+              확인
+            </button>
+          </div>
         </div>
       )}
     </div>
