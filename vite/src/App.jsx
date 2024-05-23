@@ -7,6 +7,8 @@ const App = () => {
   const [contract, setContract] = useState();
   const [totalSupply, setTotalSupply] = useState(); // totalSupply 상태 변수 추가
   const [tokenName, setTokenName] = useState(); // tokenName 상태 변수 추가
+  const [myBalance, setmyBalance] = useState(); // balance 상태 변수 추가
+  const [symbol, setSymbol] = useState();
 
   const onClickMetamask = async () => {
     try {
@@ -25,6 +27,8 @@ const App = () => {
     setContract(null);
     setTotalSupply(null);
     setTokenName(null);
+    setmyBalance(null);
+    setSymbol(null);
   };
 
   //총 발행량 가져오기
@@ -56,6 +60,30 @@ const App = () => {
     }
   };
 
+  //밸런스 가져오기
+  const onClickBalance = async () => {
+    try {
+      const response = await contract.balanceOf(signer.address);
+
+      console.log(response);
+
+      setmyBalance(response); // balance 값 설정
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  //심볼 가져오기
+  const getSymbol = async () => {
+    try {
+      const response = await contract.symbol();
+
+      setSymbol(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (!signer) return;
 
@@ -64,7 +92,10 @@ const App = () => {
     );
   }, [signer]);
 
-  useEffect(() => console.log(contract), [contract]);
+  useEffect(() => {
+    if (!contract) return;
+    getSymbol();
+  }, [contract]);
 
   return (
     <div className="bg-red-100 min-h-screen flex flex-col justify-start items-center py-16">
@@ -89,7 +120,7 @@ const App = () => {
       {contract && (
         <div className="mt-16 flex flex-col gap-8 bg-blue-100 grow max-w-md w-full">
           <h1 className="box-style">스마트 컨트랙트 연결을 완료했습니다.</h1>
-          <div className="flex gap-8">
+          <div className="flex flex-col gap-8">
             <div className="flex w-full">
               <div className="box-style grow">
                 {tokenName ? `토큰 이름: ${tokenName}` : "토큰 이름 확인"}
@@ -100,13 +131,44 @@ const App = () => {
             </div>
             <div className="flex w-full">
               <div className="box-style grow">
+                {myBalance
+                  ? `밸런스: ${formatEther(myBalance)} ${symbol}`
+                  : "밸런스 확인"}
+              </div>
+              <button className="button-style ml-4" onClick={onClickBalance}>
+                확인
+              </button>
+            </div>
+            <div className="flex w-full">
+              <div className="box-style grow">
                 {totalSupply
-                  ? `총 발행량: ${formatEther(totalSupply)}ETH`
+                  ? `총 발행량: ${formatEther(totalSupply)} ${symbol}`
                   : "총 발행량 확인"}
               </div>
               <button
                 className="button-style ml-4"
                 onClick={onClickTotalSupply}
+              >
+                확인
+              </button>
+            </div>
+            <div className="flex w-full items-end">
+              <div className="flex flex-col gap-2 grow">
+                <div className="ml-1 text-lg font-bold">토큰 전송</div>
+                <input
+                  className="input-style"
+                  type="text"
+                  placeholder="지갑 주소"
+                />
+                <input
+                  className="input-style"
+                  type="text"
+                  placeholder={`${symbol}을 입력하세요.`}
+                />
+              </div>
+              <button
+                className="button-style ml-4 h-[128px]"
+                onClick={onClickBalance}
               >
                 확인
               </button>
