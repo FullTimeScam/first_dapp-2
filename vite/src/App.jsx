@@ -1,4 +1,4 @@
-import { Contract, ethers, formatEther } from "ethers";
+import { Contract, ethers, formatEther, parseEther } from "ethers";
 import { useEffect, useState } from "react";
 import abi from "./abi.json";
 
@@ -9,6 +9,8 @@ const App = () => {
   const [tokenName, setTokenName] = useState(); // tokenName 상태 변수 추가
   const [myBalance, setmyBalance] = useState(); // balance 상태 변수 추가
   const [symbol, setSymbol] = useState();
+  const [sendAddress, setSendAddress] = useState("");
+  const [sendToken, setSendToken] = useState("");
 
   const onClickMetamask = async () => {
     try {
@@ -79,6 +81,20 @@ const App = () => {
       const response = await contract.symbol();
 
       setSymbol(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  //토큰 전송 기능
+  const onClickSendToken = async () => {
+    try {
+      if (!sendAddress || !sendToken) return;
+
+      const result = await contract.transfer(
+        sendAddress,
+        parseEther(sendToken, "wei")
+      );
     } catch (error) {
       console.error(error);
     }
@@ -159,16 +175,20 @@ const App = () => {
                   className="input-style"
                   type="text"
                   placeholder="지갑 주소"
+                  value={sendAddress}
+                  onChange={(e) => setSendAddress(e.target.value)}
                 />
                 <input
                   className="input-style"
                   type="text"
                   placeholder={`${symbol}을 입력하세요.`}
+                  value={sendToken}
+                  onChange={(e) => setSendToken(e.target.value)}
                 />
               </div>
               <button
                 className="button-style ml-4 h-[128px]"
-                onClick={onClickBalance}
+                onClick={onClickSendToken}
               >
                 확인
               </button>
